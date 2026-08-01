@@ -1,8 +1,10 @@
-# GRUB2 gfxmenu Linux theme
+# LeiOS GRUB2 gfxmenu Linux theme
 # Designed for any resolution
 
 # Global Property
-title-text: ""
+title-text: "LeiOS"
+title-color: "#ffffff"
+title-font: "Terminus Regular 16"
 desktop-image: "background.jpg"
 desktop-color: "#000000"
 terminal-font: "Terminus Regular 14"
