@@ -2,7 +2,7 @@
 # Designed for any resolution
 
 # Global Property
-title-text: "LeiOS"
+title-text: "LeiOS Bootloader"
 title-color: "#ffffff"
 title-font: "Terminus Regular 16"
 desktop-image: "background.jpg"
