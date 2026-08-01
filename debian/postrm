@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm for leios.theme.plasmoids.digitalclock
+# postrm for leios.theme.grub-theme
 # Cleans up Plasma caches after package removal so stale QML does not linger.
 #
 # Note: we do NOT call kpackagetool6 -r here, because that would delete

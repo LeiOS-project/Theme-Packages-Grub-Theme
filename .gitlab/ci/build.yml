@@ -56,7 +56,7 @@ release:
         echo "Uploading $filename ..."
         curl --fail --location --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
           --upload-file "$file" \
-          "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/leios-theme-plasmoids-digitalclock/${TAG_VERSION}/${filename}"
+          "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/leios.theme.grub-theme/${TAG_VERSION}/${filename}"
       done
 
 publish:

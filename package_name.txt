@@ -1,1 +1,1 @@
-leios.theme.plasmoids.digitalclock
+leios.theme.grub-theme

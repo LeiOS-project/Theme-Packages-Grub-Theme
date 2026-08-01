@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst for leios.theme.plasmoids.digitalclock
+# postinst for leios.theme.grub-theme
 # Refreshes the Plasma desktop after install or upgrade so the new
 # plasmoid UI is visible immediately, like apt install / apt upgrade.
 #

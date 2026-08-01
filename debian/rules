@@ -15,8 +15,8 @@ override_dh_auto_test:
 	# GUI plasmoid viewer cannot run during package build
 
 override_dh_auto_install:
-	rm -rf debian/leios.theme.plasmoids.digitalclock/usr/share/plasma/plasmoids/dev.leios.theme-packages.plasmoids.digitalclock
-	mkdir -p debian/leios.theme.plasmoids.digitalclock/usr/share/plasma/plasmoids
-	cp -a src debian/leios.theme.plasmoids.digitalclock/usr/share/plasma/plasmoids/dev.leios.theme-packages.plasmoids.digitalclock
+	rm -rf debian/leios.theme.grub-theme/usr/share/grub/themes/leios-theme
+	mkdir -p debian/leios.theme.grub-theme/usr/share/grub/themes
+	cp -a src debian/leios.theme.grub-theme/usr/share/grub/themes/leios-theme
 
 override_dh_auto_build:
