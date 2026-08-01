@@ -1,0 +1,54 @@
+#!/bin/sh
+# postinst for leios.theme.plasmoids.digitalclock
+# Refreshes the Plasma desktop after install or upgrade so the new
+# plasmoid UI is visible immediately, like apt install / apt upgrade.
+#
+# Note: we intentionally do NOT call kpackagetool6 here. The package
+# manager already owns the files under /usr/share/plasma/plasmoids/;
+# kpackagetool6 -r would delete those files on removal and break dpkg's
+# bookkeeping. The only thing left to do is invalidate caches and
+# restart the running Plasma shells.
+
+set -e
+
+# Restart Plasma for every active local graphical session that is running
+# a plasma-plasmashell systemd service. This covers installs done via
+# sudo from a terminal as well as package-manager background upgrades.
+refresh_plasma_sessions() {
+    if [ -x /usr/bin/systemctl ]; then
+        for session_dir in /run/user/*; do
+            [ -d "${session_dir}" ] || continue
+            uid=$(basename "${session_dir}")
+            # Only act on sessions that actually have a Plasma shell running.
+            if systemctl --user -M "${uid}@" is-active plasma-plasmashell.service >/dev/null 2>&1; then
+                # Clear caches so QML is recompiled from the newly installed files.
+                install -d -o "${uid}" -g "${uid}" "${session_dir}" 2>/dev/null || true
+                rm -rf "${session_dir}/plasmashell/qmlcache" 2>/dev/null || true
+                rm -rf "${session_dir}/plasma*" 2>/dev/null || true
+                rm -f "${session_dir}"/*.kcache 2>/dev/null || true
+
+                # Restart the Plasma shell. --wait is not used because we
+                # do not want package installation to block on the desktop.
+                systemctl --user -M "${uid}@" try-restart plasma-plasmashell.service >/dev/null 2>&1 || true
+            fi
+        done
+    fi
+}
+
+case "$1" in
+    configure|triggered)
+        refresh_plasma_sessions
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

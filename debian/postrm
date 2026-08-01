@@ -1,0 +1,34 @@
+#!/bin/sh
+# postrm for leios.theme.plasmoids.digitalclock
+# Cleans up Plasma caches after package removal so stale QML does not linger.
+#
+# Note: we do NOT call kpackagetool6 -r here, because that would delete
+# files under /usr/share/plasma/plasmoids/ that belong to the package.
+# dpkg already removes those files; our job is just to clear per-user
+# caches so the plasmoid disappears from running desktops.
+
+set -e
+
+case "$1" in
+    remove|purge|disappear)
+        for session_dir in /run/user/*; do
+            [ -d "${session_dir}" ] || continue
+            uid=$(basename "${session_dir}")
+            rm -rf "${session_dir}/plasmashell/qmlcache" 2>/dev/null || true
+            rm -rf "${session_dir}/plasma*" 2>/dev/null || true
+            rm -f "${session_dir}"/*.kcache 2>/dev/null || true
+        done
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade)
+    ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0

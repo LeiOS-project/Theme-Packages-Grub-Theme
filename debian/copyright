@@ -1,0 +1,29 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: leios.theme.plasmoids.digitalclock
+Upstream-Contact: Linus Fischer <leicraft@leicraftmc.de>
+Source: https://git.leicraftmc.de/LeiOS/Theme-Packages/Plasmoids/DigitalClock
+
+Files: *
+Copyright: 2013 Heena Mahour <heena393@gmail.com>
+           2013 Sebastian Kügler <sebas@kde.org>
+           2013 Martin Klapetek <mklapetek@kde.org>
+           2014 David Edmundson <davidedmundson@kde.org>
+           2026 Linus Fischer <leicraft@leicraftmc.de>
+License: GPL-2.0+
+
+License: GPL-2.0+
+ This package is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in "/usr/share/common-licenses/GPL-2".

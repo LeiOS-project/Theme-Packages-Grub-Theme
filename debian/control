@@ -1,0 +1,16 @@
+Source: leios.theme.plasmoids.digitalclock
+Section: kde
+Priority: optional
+Maintainer: LeiOS Project Team <support@leios.dev>
+Build-Depends: debhelper-compat (= 13), rsync
+Standards-Version: 4.6.2
+Homepage: https://git.leicraftmc.de/LeiOS/Theme-Packages/Plasmoids/DigitalClock
+Rules-Requires-Root: no
+
+Package: leios.theme.plasmoids.digitalclock
+Architecture: all
+Depends: plasma-workspace (>= 4:6.0),
+         ${misc:Depends}
+Description:
+ A fork of the KDE Plasma Digital Clock plasmoid for the LeiOS theme,
+ featuring a layout fix for automatic date display mode.
