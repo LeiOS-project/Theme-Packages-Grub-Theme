@@ -5,6 +5,7 @@
 set -e
 
 THEME_FILE="/usr/share/grub/themes/leios-theme/theme.txt"
+BACKGROUND_FILE="/usr/share/grub/themes/leios-theme/background.jpg"
 GRUB_DEFAULT="/etc/default/grub"
 
 grub_update() {
@@ -26,8 +27,15 @@ activate_theme() {
     # Remove any existing GRUB_THEME line to avoid duplicates.
     sed -i '/^[[:space:]]*GRUB_THEME=/d' "${GRUB_DEFAULT}"
 
+    # Remove any existing GRUB_BACKGROUND line to avoid duplicates.
+    sed -i '/^[[:space:]]*GRUB_BACKGROUND=/d' "${GRUB_DEFAULT}"
+
     # Activate the LeiOS theme.
     printf '\n# LeiOS GRUB theme\nGRUB_THEME="%s"\n' "${THEME_FILE}" >> "${GRUB_DEFAULT}"
+
+    # Override the distribution background image with the LeiOS background so
+    # there is no visible flash when GRUB hands off to Plymouth.
+    printf 'GRUB_BACKGROUND="%s"\n' "${BACKGROUND_FILE}" >> "${GRUB_DEFAULT}"
 
     # Set a reasonable graphics mode if none is configured.
     if ! grep -q '^[[:space:]]*GRUB_GFXMODE=' "${GRUB_DEFAULT}"; then

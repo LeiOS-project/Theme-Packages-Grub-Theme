@@ -5,6 +5,7 @@
 set -e
 
 THEME_FILE="/usr/share/grub/themes/leios-theme/theme.txt"
+BACKGROUND_FILE="/usr/share/grub/themes/leios-theme/background.jpg"
 GRUB_DEFAULT="/etc/default/grub"
 
 grub_update() {
@@ -22,6 +23,9 @@ deactivate_theme() {
 
     # Remove the LeiOS theme line and any trailing blank lines it may have left.
     sed -i '\|^[[:space:]]*GRUB_THEME="'"${THEME_FILE}"'"|d' "${GRUB_DEFAULT}"
+
+    # Remove the LeiOS background override.
+    sed -i '\|^[[:space:]]*GRUB_BACKGROUND="'"${BACKGROUND_FILE}"'"|d' "${GRUB_DEFAULT}"
 
     # Remove our comment marker if it is now orphaned.
     sed -i '/^[[:space:]]*# LeiOS GRUB theme$/d' "${GRUB_DEFAULT}"

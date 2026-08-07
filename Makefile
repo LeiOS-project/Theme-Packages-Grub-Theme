@@ -40,11 +40,11 @@ package:
 install: package
 	@:$(call require_var,$(PACKAGE_NAME),PACKAGE_NAME)
 	@:$(call require_var,$(DEB_BUILD_OUTPUT_DIR),DEB_BUILD_OUTPUT_DIR)
-	sudo apt-get install -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb || \
-		(sudo apt-get install -f -y && sudo apt-get install -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb)
+	sudo dpkg -i $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb || \
+		(sudo apt-get install -f -y && sudo dpkg -i $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb)
 
 update: package
 	@:$(call require_var,$(PACKAGE_NAME),PACKAGE_NAME)
 	@:$(call require_var,$(DEB_BUILD_OUTPUT_DIR),DEB_BUILD_OUTPUT_DIR)
-	sudo apt-get install --only-upgrade -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb || \
-		(sudo apt-get install -f -y && sudo apt-get install --only-upgrade -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb)
+	sudo dpkg -i $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb || \
+		(sudo apt-get install -f -y && sudo dpkg -i $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb)
