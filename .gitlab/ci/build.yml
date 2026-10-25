@@ -30,7 +30,7 @@ build-deb:
   needs: [validate-tag]
   before_script:
     - apt-get update
-    - apt-get install -y --no-install-recommends build-essential debhelper devscripts
+    - apt-get install -y --no-install-recommends build-essential debhelper devscripts imagemagick
   script:
     - make clean
     - make package

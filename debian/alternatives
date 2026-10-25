@@ -1,0 +1,6 @@
+Name: desktop-grub
+Link: /usr/share/images/desktop-base/desktop-grub.png
+Alternative: /usr/share/leios.theme.grub-theme/background.png
+Dependents:
+  /usr/share/desktop-base/grub_background.sh desktop-grub.sh /usr/share/leios.theme.grub-theme/grub_background.sh
+Priority: 60

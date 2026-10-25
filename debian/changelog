@@ -1,3 +1,19 @@
+leios.theme.grub-theme (1.1.0) unstable; urgency=medium
+
+  * Enable the theme through defaults instead of editing /etc/default/grub:
+    - ship /etc/default/grub.d/leios-theme.cfg, which sets GRUB_THEME and
+      GRUB_GFXMODE only if they are not set in /etc/default/grub;
+    - provide the background through the desktop-grub alternative used by
+      /etc/grub.d/05_debian_theme, so GRUB_BACKGROUND or an image in
+      /boot/grub/ still take precedence.
+  * On upgrade, remove the "# LeiOS GRUB theme" block (GRUB_THEME,
+    GRUB_BACKGROUND and GRUB_GFXMODE) that earlier versions appended to
+    /etc/default/grub.
+  * Only run update-grub when GRUB has been set up and not in containers,
+    like /etc/kernel/postinst.d/zz-update-grub.
+
+ -- Linus Fischer <leicraft@leicraftmc.de>  Sun, 25 Oct 2026 12:00:00 +0100
+
 leios.theme.grub-theme (1.0.0) unstable; urgency=medium
 
   * Initial release.

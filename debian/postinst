@@ -1,54 +1,71 @@
 #!/bin/sh
 # postinst for leios.theme.grub-theme
-# Activates the LeiOS GRUB2 theme and rebuilds the GRUB configuration.
+# Rebuilds the GRUB configuration so the LeiOS theme is used.
+#
+# The theme is enabled through defaults only, /etc/default/grub is left to the
+# administrator:
+#   - /etc/default/grub.d/leios-theme.cfg sets GRUB_THEME and GRUB_GFXMODE
+#     unless they are already set in /etc/default/grub;
+#   - the desktop-grub alternative (debian/alternatives) provides the
+#     background used by /etc/grub.d/05_debian_theme unless GRUB_BACKGROUND
+#     is set.
 
 set -e
 
-THEME_FILE="/usr/share/grub/themes/leios-theme/theme.txt"
-BACKGROUND_FILE="/usr/share/grub/themes/leios-theme/background.jpg"
 GRUB_DEFAULT="/etc/default/grub"
 
-grub_update() {
-    if [ -x /usr/sbin/update-grub ]; then
-        /usr/sbin/update-grub || true
-    elif command -v update-grub >/dev/null 2>&1; then
-        update-grub || true
+# Versions before 1.1.0 appended these settings to /etc/default/grub. Remove
+# exactly the lines they wrote: the "# LeiOS GRUB theme" marker together with
+# the blank line printed before it, our GRUB_THEME and GRUB_BACKGROUND lines,
+# and the GRUB_GFXMODE fallback that was only ever written after the marker.
+# Any other line, including a different GRUB_GFXMODE, is the administrator's.
+remove_legacy_settings() {
+    [ -f "${GRUB_DEFAULT}" ] || return 0
+
+    tmp="${GRUB_DEFAULT}.leios-tmp"
+    cp -p "${GRUB_DEFAULT}" "${tmp}"
+    awk '
+        function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s }
+        function flush() { for (; blank > 0; blank--) print "" }
+        {
+            line = trim($0)
+            if (line == "") { blank++; next }
+            if (line == "# LeiOS GRUB theme") { if (blank > 0) blank--; marker = 1; next }
+            if (line == "GRUB_THEME=\"/usr/share/grub/themes/leios-theme/theme.txt\"") next
+            if (line == "GRUB_BACKGROUND=\"/usr/share/grub/themes/leios-theme/background.jpg\"") next
+            if (marker && line == "GRUB_GFXMODE=\"1920x1080,auto\"") next
+            flush()
+            print
+        }
+        END { flush() }
+    ' "${GRUB_DEFAULT}" > "${tmp}"
+
+    if cmp -s "${GRUB_DEFAULT}" "${tmp}"; then
+        rm -f "${tmp}"
     else
-        echo "WARNING: update-grub not found; please run it manually to activate the theme" >&2
+        mv -f "${tmp}" "${GRUB_DEFAULT}"
+        echo "Removed LeiOS theme settings from ${GRUB_DEFAULT}; they are now provided by /etc/default/grub.d/leios-theme.cfg"
     fi
 }
 
-activate_theme() {
-    if [ ! -f "${GRUB_DEFAULT}" ]; then
-        echo "WARNING: ${GRUB_DEFAULT} not found, skipping GRUB configuration" >&2
+# Same conditions as /etc/kernel/postinst.d/zz-update-grub: skip containers
+# and systems where GRUB has not been set up yet (e.g. image builds).
+grub_update() {
+    command -v update-grub >/dev/null 2>&1 || return 0
+    if command -v systemd-detect-virt >/dev/null 2>&1 &&
+       systemd-detect-virt --quiet --container; then
         return 0
     fi
+    [ -e /boot/grub/grub.cfg ] || return 0
 
-    # Remove any existing GRUB_THEME line to avoid duplicates.
-    sed -i '/^[[:space:]]*GRUB_THEME=/d' "${GRUB_DEFAULT}"
-
-    # Remove any existing GRUB_BACKGROUND line to avoid duplicates.
-    sed -i '/^[[:space:]]*GRUB_BACKGROUND=/d' "${GRUB_DEFAULT}"
-
-    # Activate the LeiOS theme.
-    printf '\n# LeiOS GRUB theme\nGRUB_THEME="%s"\n' "${THEME_FILE}" >> "${GRUB_DEFAULT}"
-
-    # Override the distribution background image with the LeiOS background so
-    # there is no visible flash when GRUB hands off to Plymouth.
-    printf 'GRUB_BACKGROUND="%s"\n' "${BACKGROUND_FILE}" >> "${GRUB_DEFAULT}"
-
-    # Set a reasonable graphics mode if none is configured.
-    if ! grep -q '^[[:space:]]*GRUB_GFXMODE=' "${GRUB_DEFAULT}"; then
-        printf 'GRUB_GFXMODE="1920x1080,auto"\n' >> "${GRUB_DEFAULT}"
-        # printf 'GRUB_GFXMODE="auto"\n' >> "${GRUB_DEFAULT}"
-    fi
-
-    grub_update
+    update-grub || echo "WARNING: update-grub failed; please run it manually to activate the theme" >&2
 }
 
 case "$1" in
-    configure|triggered)
-        activate_theme
+    configure)
+        if [ -n "$2" ] && dpkg --compare-versions "$2" lt 1.1.0~; then
+            remove_legacy_settings
+        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
@@ -61,5 +78,10 @@ case "$1" in
 esac
 
 #DEBHELPER#
+
+# Only after debhelper has registered the desktop-grub alternative above.
+if [ "$1" = "configure" ]; then
+    grub_update
+fi
 
 exit 0

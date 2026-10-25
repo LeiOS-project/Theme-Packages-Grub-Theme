@@ -18,5 +18,17 @@ override_dh_auto_install:
 	rm -rf debian/leios.theme.grub-theme/usr/share/grub/themes/leios-theme
 	mkdir -p debian/leios.theme.grub-theme/usr/share/grub/themes
 	cp -a src debian/leios.theme.grub-theme/usr/share/grub/themes/leios-theme
+	# Defaults for GRUB_THEME/GRUB_GFXMODE; /etc/default/grub takes precedence.
+	install -D -m 0644 defaults/leios-theme.cfg debian/leios.theme.grub-theme/etc/default/grub.d/leios-theme.cfg
+	# Background for the desktop-grub alternative (debian/alternatives).
+	# 05_debian_theme picks the image reader by file extension, so it must be a
+	# PNG; GRUB only reads 8-bit RGB(A) non-interlaced PNGs.
+	install -D -m 0644 defaults/grub_background.sh debian/leios.theme.grub-theme/usr/share/leios.theme.grub-theme/grub_background.sh
+	convert src/background.jpg -strip -define png:exclude-chunks=date,time \
+		PNG24:debian/leios.theme.grub-theme/usr/share/leios.theme.grub-theme/background.png
+	# update-alternatives needs the link directories, which normally come from
+	# desktop-base.
+	mkdir -p debian/leios.theme.grub-theme/usr/share/images/desktop-base \
+		debian/leios.theme.grub-theme/usr/share/desktop-base
 
 override_dh_auto_build:

@@ -1,47 +1,30 @@
 #!/bin/sh
 # postrm for leios.theme.grub-theme
-# Deactivates the LeiOS GRUB2 theme and rebuilds the GRUB configuration.
+# Rebuilds the GRUB configuration without the LeiOS theme.
+#
+# The desktop-grub alternative is removed by the debhelper-generated prerm.
+# /etc/default/grub.d/leios-theme.cfg stays until purge but does nothing once
+# the theme files are gone.
 
 set -e
 
-THEME_FILE="/usr/share/grub/themes/leios-theme/theme.txt"
-BACKGROUND_FILE="/usr/share/grub/themes/leios-theme/background.jpg"
-GRUB_DEFAULT="/etc/default/grub"
-
 grub_update() {
-    if [ -x /usr/sbin/update-grub ]; then
-        /usr/sbin/update-grub || true
-    elif command -v update-grub >/dev/null 2>&1; then
-        update-grub || true
-    fi
-}
-
-deactivate_theme() {
-    if [ ! -f "${GRUB_DEFAULT}" ]; then
+    command -v update-grub >/dev/null 2>&1 || return 0
+    if command -v systemd-detect-virt >/dev/null 2>&1 &&
+       systemd-detect-virt --quiet --container; then
         return 0
     fi
+    [ -e /boot/grub/grub.cfg ] || return 0
 
-    # Remove the LeiOS theme line and any trailing blank lines it may have left.
-    sed -i '\|^[[:space:]]*GRUB_THEME="'"${THEME_FILE}"'"|d' "${GRUB_DEFAULT}"
-
-    # Remove the LeiOS background override.
-    sed -i '\|^[[:space:]]*GRUB_BACKGROUND="'"${BACKGROUND_FILE}"'"|d' "${GRUB_DEFAULT}"
-
-    # Remove our comment marker if it is now orphaned.
-    sed -i '/^[[:space:]]*# LeiOS GRUB theme$/d' "${GRUB_DEFAULT}"
-
-    # Remove empty trailing lines to keep the file tidy.
-    sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${GRUB_DEFAULT}" || true
-
-    grub_update
+    update-grub || echo "WARNING: update-grub failed; please run it manually to remove the theme" >&2
 }
 
 case "$1" in
-    remove|purge|disappear)
-        deactivate_theme
+    remove|disappear)
+        grub_update
     ;;
 
-    upgrade|failed-upgrade|abort-install|abort-upgrade)
+    purge|upgrade|failed-upgrade|abort-install|abort-upgrade)
     ;;
 
     *)

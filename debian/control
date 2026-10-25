@@ -2,7 +2,7 @@ Source: leios.theme.grub-theme
 Section: boot
 Priority: optional
 Maintainer: LeiOS Project Team <support@leios.dev>
-Build-Depends: debhelper-compat (= 13)
+Build-Depends: debhelper-compat (= 13), imagemagick
 Standards-Version: 4.6.2
 Homepage: https://git.leicraftmc.de/LeiOS/Theme-Packages/Grub-Theme
 Rules-Requires-Root: no
@@ -15,6 +15,9 @@ Description: LeiOS GRUB2 gfxmenu theme
  This package provides the LeiOS theme for the GRUB2 boot menu.
  .
  It includes the theme description, background image, fonts, icons and
- selection artwork for GRUB's gfxmenu subsystem. On installation the
- theme is activated in /etc/default/grub and update-grub is run; on
- removal the theme line is removed and GRUB is updated again.
+ selection artwork for GRUB's gfxmenu subsystem.
+ .
+ The theme is enabled as a default only: /etc/default/grub.d/leios-theme.cfg
+ sets GRUB_THEME and GRUB_GFXMODE unless they are set in /etc/default/grub,
+ and the background is provided through the desktop-grub alternative used
+ by /etc/grub.d/05_debian_theme.
